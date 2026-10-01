@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tools - Educational Utilities & Calculations</title>
+    <style>
+        :root {
+            --bg-color: #080c14;
+            --card-bg: #111827;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f3f4f6;
+            --text-sec: #9ca3af;
+            --border: #1f2937;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--accent), #1d4ed8);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-text h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            margin: 2px 0 0;
+            font-size: 0.75rem;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 350px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--text-sec);
+        }
+
+        .main-wrapper {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 30px;
+            flex: 1;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+
+        .cat-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-sec);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 24px -6px rgba(59, 130, 246, 0.25);
+        }
+
+        .game-thumb {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .game-info {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .game-info h3 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-info p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-sec);
+        }
+
+        /* Fullscreen Player View */
+        #player-view {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px 30px;
+            max-width: 1500px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .player-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: var(--border);
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            min-height: 700px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            background-color: var(--card-bg);
+            color: var(--text-sec);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">📐</div>
+            <div class="logo-text">
+                <h1>Math Tools</h1>
+                <p>Advanced Academic Utilities</p>
+            </div>
+        </div>
+        <div class="search-box">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="searchInput" placeholder="Search calculation modules..." onkeyup="filterModules()">
+        </div>
+    </header>
+
+    <!-- MENU VIEW -->
+    <div id="menu-view" class="main-wrapper">
+        <div class="categories">
+            <button class="cat-btn active" onclick="switchCat('all')">All Modules</button>
+            <button class="cat-btn" onclick="switchCat('runner')">Motion Physics</button>
+            <button class="cat-btn" onclick="switchCat('puzzle')">Logic Matrices</button>
+            <button class="cat-btn" onclick="switchCat('arcade')">Simulators</button>
+        </div>
+
+        <div class="game-grid" id="gameGrid"></div>
+    </div>
+
+    <!-- PLAYER VIEW -->
+    <div id="player-view">
+        <div class="player-nav">
+            <button class="back-btn" onclick="goHome()">← Return to Modules</button>
+            <h2 id="activeTitle" style="margin:0; font-size: 1rem; color: var(--text-sec);">Module Active</h2>
+            <div style="width: 120px;"></div>
+        </div>
+        <div class="iframe-wrapper">
+            <iframe id="mainFrame" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Math Tools Suite. All internal calculation engines functional.</p>
+    </footer>
+
+    <script>
+        // Massive 90+ Curated Library (Internal Iframe-Safe Embeds)
+        const modules = [
+            { title: "2048", cat: "puzzle", icon: "🔢", url: "https://play2048.co/", desc: "Exponential growth model" },
+            { title: "Pac-Man", cat: "arcade", icon: "🕹️", url: "https://www.google.com/logos/2010/pacman10-i.html", desc: "Grid pathing coordinate test" },
+            { title: "Tetris", cat: "puzzle", icon: "🧱", url: "https://tetris.com/play-tetris", desc: "Spatial geometry matrices" },
+            { title: "Wordle", cat: "puzzle", icon: "🔠", url: "https://www.nytimes.com/games/wordle/index.html", desc: "Permutation statistics" },
+            { title: "Chess Analysis", cat: "puzzle", icon: "♟️", url: "https://lichess.org/embed/analysis", desc: "Combinatorial game theory" },
+            { title: "Tiny Fishing", cat: "arcade", icon: "🎣", url: "https://html5.gamedistribution.com/rvvASMiM/a8726beea7dc4020a672e1c94447fc09/", desc: "Depth calculation model" },
+            { title: "Moto X3M", cat: "runner", icon: "🏍️", url: "https://html5.gamedistribution.com/1a76f2f170f2425cb51624467d30560a/", desc: "Kinetic acceleration test" },
+            { title: "Basket Random", cat: "arcade", icon: "🏀", url: "https://html5.gamedistribution.com/a9775ffba2324c4fb313f890f845778a/", desc: "Physics trajectory model" },
+            { title: "Soccer Random", cat: "arcade", icon: "⚽", url: "https://html5.gamedistribution.com/6cc6e3f2824e4d588506197b789139cf/", desc: "Vector bounce simulation" },
+            { title: "Boxing Random", cat: "arcade", icon: "🥊", url: "https://html5.gamedistribution.com/cdb5b14e9f594191a6bc89178bfd885a/", desc: "Force impact calculation" },
+            { title: "Temple Run 2", cat: "runner", icon: "🏃", url: "https://www.poki.com/en/g/temple-run-2", desc: "Endless function loops" },
+            { title: "Subway Surfers", cat: "runner", icon: "🏃‍♂️", url: "https://html5.gamedistribution.com/subway-surfers/", desc: "Velocity vector testing" },
+            { title: "Helix Jump", cat: "puzzle", icon: "🌀", url: "https://html5.gamedistribution.com/5ea38e1b6f044e05b9f71ee4cf91901a/", desc: "Vertical descent equations" },
+            { title: "Paper.io 2", cat: "puzzle", icon: "📄", url: "https://paper-io.com/", desc: "Area boundary algorithms" },
+            { title: "Snake.io", cat: "puzzle", icon: "🐍", url: "https://snake.io/", desc: "Linear growth equations" },
+            { title: "Flappy Bird", cat: "puzzle", icon: "🐦", url: "https://flappybird.io/", desc: "Gravity force simulation" },
+            { title: "Tunnel Rush", cat: "runner", icon: "🚀", url: "https://html5.gamedistribution.com/tunnel-rush/", desc: "Optical speed projection" },
+            { title: "Geometry Dash", cat: "runner", icon: "🟩", url: "https://scratch.mit.edu/projects/685817800/embed", desc: "Rhythmic beat intervals" },
+            { title: "Fireboy & Watergirl", cat: "puzzle", icon: "🔥", url: "https://www.hoodamath.com/mobile/games/fireboy-and-watergirl-forest-temple/game.html", desc: "Dual variable balancing" },
+            { title: "Run 3", cat: "runner", icon: "👽", url: "https://www.hoodamath.com/mobile/games/run-3/game.html", desc: "Tunnel coordinate mapping" },
+            { title: "Cut the Rope", cat: "puzzle", icon: "🍬", url: "https://www.hoodamath.com/mobile/games/cut-the-rope/game.html", desc: "Tension & string physics" },
+            { title: "Bad Piggies", cat: "puzzle", icon: "🐷", url: "https://www.hoodamath.com/mobile/games/bad-piggies/game.html", desc: "Engineering draft physics" },
+            { title: "Drift Boss", cat: "runner", icon: "🏎️", url: "https://www.hoodamath.com/mobile/games/drift-boss/game.html", desc: "Friction coefficient sim" },
+            { title: "Crossy Road", cat: "runner", icon: "🐔", url: "https://www.hoodamath.com/mobile/games/crossy-road/game.html", desc: "Probability vector analysis" },
+            { title: "Checkers", cat: "puzzle", icon: "🔴", url: "https://www.hoodamath.com/mobile/games/checkers/game.html", desc: "Diagonal probability sets" },
+            { title: "Chess Classic", cat: "puzzle", icon: "♔", url: "https://www.hoodamath.com/mobile/games/chess/game.html", desc: "Tactical mapping matrix" },
+            { title: "Pool Billiards", cat: "arcade", icon: "🎱", url: "https://html5.gamedistribution.com/f9c894c25f494f6bb997a339d1b033d6/", desc: "Angle reflection vectors" },
+            { title: "Master Chess", cat: "puzzle", icon: "♟️", url: "https://html5.gamedistribution.com/b9e28fa2d89a4252a11b6f0022fa2276/", desc: "Matrix calculation logic" },
+            { title: "Ludo Hero", cat: "puzzle", icon: "🎲", url: "https://html5.gamedistribution.com/2b34a6cf80384a5e954ef853e5e43a91/", desc: "Probability math engine" },
+            { title: "Tic Tac Toe Math", cat: "puzzle", icon: "❌", url: "https://html5.gamedistribution.com/0a7e58a74e53472d8291a18da308fae8/", desc: "Combinatorics grid" },
+            { title: "Sudoku", cat: "puzzle", icon: "🔢", url: "https://html5.gamedistribution.com/sudoku/", desc: "Deduction logic matrix" },
+            { title: "Solitaire", cat: "puzzle", icon: "🃏", url: "https://html5.gamedistribution.com/solitaire/", desc: "Sequence sorting engine" },
+            { title: "Mahjong Dimensions", cat: "puzzle", icon: "🀄", url: "https://html5.gamedistribution.com/mahjong/", desc: "3D symmetry mapping" },
+            { title: "Bubble Shooter", cat: "puzzle", icon: "🔵", url: "https://html5.gamedistribution.com/bubble-shooter/", desc: "Collision angles physics" },
+            { title: "Tower Builder", cat: "puzzle", icon: "🏗️", url: "https://html5.gamedistribution.com/tower-builder/", desc: "Vertical stability mechanics" },
+            { title: "Stack", cat: "puzzle", icon: "📦", url: "https://html5.gamedistribution.com/stack/", desc: "Precision timing metrics" },
+            { title: "Knife Hit", cat: "arcade", icon: "🗡️", url: "https://html5.gamedistribution.com/knife-hit/", desc: "Rotational timing calculus" },
+            { title: "Bowmaster", cat: "arcade", icon: "🏹", url: "https://html5.gamedistribution.com/bowmaster/", desc: "Projectile arc calculation" },
+            { title: "Penalty Shooters 2", cat: "arcade", icon: "⚽", url: "https://html5.gamedistribution.com/penalty-shooters-2/", desc: "Goal vector analytics" },
+            { title: "Basketball Stars", cat: "arcade", icon: "🏀", url: "https://html5.gamedistribution.com/basketball-stars/", desc: "Hoop trajectory matrix" },
+            { title: "Air Hockey", cat: "arcade", icon: "🏒", url: "https://html5.gamedistribution.com/air-hockey/", desc: "Frictionless reflection math" },
+            { title: "Mini Golf", cat: "arcade", icon: "⛳", url: "https://html5.gamedistribution.com/mini-golf/", desc: "Green slope simulation" },
+            { title: "Bowling Pro", cat: "arcade", icon: "🎳", url: "https://html5.gamedistribution.com/bowling/", desc: "Kinetic mass transfer" },
+            { title: "Darts Pro", cat: "arcade", icon: "🎯", url: "https://html5.gamedistribution.com/darts/", desc: "Coordinate targeting matrix" },
+            { title: "Archery World Tour", cat: "arcade", icon: "🎯", url: "https://html5.gamedistribution.com/archery/", desc: "Wind resistance vectors" },
+            { title: "Moto Road Rider", cat: "runner", icon: "🏍️", url: "https://html5.gamedistribution.com/moto-road/", desc: "Relative speed equation" },
+            { title: "Extreme Car Driving", cat: "runner", icon: "🚗", url: "https://html5.gamedistribution.com/extreme-car/", desc: "Chassis dynamics model" },
+            { title: "City Car Stunt", cat: "runner", icon: "🚙", url: "https://html5.gamedistribution.com/city-car-stunt/", desc: "Gravity loop calculation" },
+            { title: "Parking Fury", cat: "puzzle", icon: "🅿️", url: "https://html5.gamedistribution.com/parking-fury/", desc: "Spatial parking geometry" },
+            { title: "Block Craft 3D", cat: "puzzle", icon: "🧱", url: "https://html5.gamedistribution.com/block-craft/", desc: "Voxel coordinate system" },
+            { title: "Paper Minecraft", cat: "puzzle", icon: "⛏️", url: "https://scratch.mit.edu/projects/1012845/embed", desc: "2D terrain generation" },
+            { title: "Super Mario 64 JS", cat: "runner", icon: "🍄", url: "https://robobar.github.io/sm64js/", desc: "3D rendering engine test" },
+            { title: "Doom JS", cat: "arcade", icon: "🔫", url: "https://js-dos.com/games/doom.js.html", desc: "Raycasting engine sim" },
+            { title: "Quake JS", cat: "arcade", icon: "💥", url: "https://quakejs.com/", desc: "Vector graphics mapping" },
+            { title: "Retro Bowl", cat: "arcade", icon: "🏈", url: "https://retrobowl.me/", desc: "Data matrix stats" },
+            { title: "Slope Unblocked", cat: "runner", icon: "⛰️", url: "https://kbhgames.com/game/slope", desc: "Angular momentum physics" },
+            { title: "Color Switch", cat: "puzzle", icon: "🎨", url: "https://html5.gamedistribution.com/color-switch/", desc: "Color sequence probability" },
+            { title: "Helix Fall", cat: "puzzle", icon: "🌀", url: "https://html5.gamedistribution.com/helix-fall/", desc: "Gravity acceleration rate" },
+            { title: "Stack Ball", cat: "arcade", icon: "🏐", url: "https://html5.gamedistribution.com/stack-ball/", desc: "Kinetic destruction force" },
+            { title: "Draw Climber", cat: "puzzle", icon: "✏️", url: "https://html5.gamedistribution.com/draw-climber/", desc: "Leg mechanism geometry" },
+            { title: "Idle Mining", cat: "arcade", icon: "⛏️", url: "https://html5.gamedistribution.com/idle-mining/", desc: "Exponential economic scaling" },
+            { title: "Clicker Heroes", cat: "arcade", icon: "⚔️", url: "https://html5.gamedistribution.com/clicker-heroes/", desc: "Incremental value systems" },
+            { title: "Paper Flight", cat: "runner", icon: "✈️", url: "https://html5.gamedistribution.com/paper-flight/", desc: "Aerodynamic lift ratios" },
+            { title: "Bottle Flip 3D", cat: "puzzle", icon: "🍼", url: "https://html5.gamedistribution.com/bottle-flip/", desc: "Rotational axis balance" },
+            { title: "Flip Master", cat: "arcade", icon: "🤸", url: "https://html5.gamedistribution.com/flip-master/", desc: "Momentum transfer model" },
+            { title: "Parkour Block", cat: "runner", icon: "🏃", url: "https://html5.gamedistribution.com/parkour-block/", desc: "Spatial jump calculations" },
+            { title: "Stickman Hook", cat: "runner", icon: "🧗", url: "https://html5.gamedistribution.com/stickman-hook/", desc: "Pendulum swing physics" },
+            { title: "Pixel Combat", cat: "arcade", icon: "🛡️", url: "https://html5.gamedistribution.com/pixel-combat/", desc: "Coordinate combat logic" },
+            { title: "Zombotron", cat: "arcade", icon: "🧟", url: "https://html5.gamedistribution.com/zombotron/", desc: "Ballistic projectile physics" },
+            { title: "Basket Champs", cat: "arcade", icon: "🏀", url: "https://html5.gamedistribution.com/basket-champs/", desc: "Parabolic trajectory angles" },
+            { title: "Touchdowners", cat: "arcade", icon: "🏈", url: "https://html5.gamedistribution.com/touchdowners/", desc: "Ragdoll physics engine" },
+            { title: "Soccer Skills", cat: "arcade", icon: "⚽", url: "https://html5.gamedistribution.com/soccer-skills/", desc: "Friction vector vectors" },
+            { title: "Moto Maniac", cat: "runner", icon: "🏍️", url: "https://html5.gamedistribution.com/moto-maniac/", desc: "Incline balance models" },
+            { title: "Wheely", cat: "puzzle", icon: "🚗", url: "https://html5.gamedistribution.com/wheely/", desc: "Mechanical lever puzzles" },
+            { title: "Snail Bob", cat: "puzzle", icon: "🐌", url: "https://html5.gamedistribution.com/snail-bob/", desc: "Constant low velocity paths" },
+            { title: "Cut the Rope 2", cat: "puzzle", icon: "🍬", url: "https://html5.gamedistribution.com/cut-the-rope-2/", desc: "Advanced pulley mechanics" },
+            { title: "Where's My Water", cat: "puzzle", icon: "💧", url: "https://html5.gamedistribution.com/wheres-my-water/", desc: "Fluid dynamics modeling" },
+            { title: "Brain Out", cat: "puzzle", icon: "🧠", url: "https://html5.gamedistribution.com/brain-out/", desc: "Lateral logic equations" },
+            { title: "Troll Face Quest", cat: "puzzle", icon: "🤡", url: "https://html5.gamedistribution.com/troll-face/", desc: "Abstract sequence analysis" },
+            { title: "Jelly Shift", cat: "puzzle", icon: "🧊", url: "https://html5.gamedistribution.com/jelly-shift/", desc: "Volumetric shape scaling" },
+            { title: "Master Dash", cat: "runner", icon: "⚡", url: "https://html5.gamedistribution.com/master-dash/", desc: "Reaction timing metrics" },
+            { title: "Neon Biker", cat: "runner", icon: "🏍️", url: "https://html5.gamedistribution.com/neon-biker/", desc: "Neon spectrum calculations" },
+            { title: "Sky Riders", cat: "runner", icon: "🚀", url: "https://html5.gamedistribution.com/sky-riders/", desc: "Orbital speed projections" },
+            { title: "Space Waves", cat: "runner", icon: "🛸", url: "https://html5.gamedistribution.com/space-waves/", desc: "Wave frequency tracking" },
+            { title: "Neon Rider", cat: "runner", icon: "🏎️", url: "https://html5.gamedistribution.com/neon-rider/", desc: "Velocity curve plotting" },
+            { title: "Cyber Truck", cat: "runner", icon: "🚙", url: "https://html5.gamedistribution.com/cyber-truck/", desc: "Chassis load distribution" },
+            { title: "Highway Racer", cat: "runner", icon: "🛣️", url: "https://html5.gamedistribution.com/highway-racer/", desc: "Relative motion calculus" },
+            { title: "Traffic Run", cat: "puzzle", icon: "🚦", url: "https://html5.gamedistribution.com/traffic-run/", desc: "Intersection timing logic" },
+            { title: "Car Eats Car", cat: "arcade", icon: "🚗", url: "https://html5.gamedistribution.com/car-eats-car/", desc: "Mechanical torque analysis" },
+            { title: "Earn to Die", cat: "arcade", icon: "🚙", url: "https://html5.gamedistribution.com/earn-to-die/", desc: "Kinetic upgrade scaling" }
+        ];
+
+        function renderModules(list) {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = "";
+            list.forEach(m => {
+                grid.innerHTML += `
+                    <div class="game-card" onclick="launchModule('${m.url}', '${m.title}')">
+                        <div class="game-thumb">${m.icon}</div>
+                        <div class="game-info">
+                            <h3>${m.title}</h3>
+                            <p>${m.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function launchModule(url, title) {
+            document.getElementById('menu-view').style.display = 'none';
+            document.getElementById('player-view').style.display = 'flex';
+            document.getElementById('activeTitle').innerText = title;
+            document.getElementById('mainFrame').src = url;
+        }
+
+        function goHome() {
+            document.getElementById('player-view').style.display = 'none';
+            document.getElementById('menu-view').style.display = 'block';
+            document.getElementById('mainFrame').src = '';
+        }
+
+        function filterModules() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            let matches = modules.filter(m => m.title.toLowerCase().includes(query) || m.desc.toLowerCase().includes(query));
+            renderModules(matches);
+        }
+
+        function switchCat(category) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if (category === 'all') {
+                renderModules(modules);
+            } else {
+                renderModules(modules.filter(m => m.cat === category));
+            }
+        }
+
+        // Boot initial render
+        renderModules(modules);
+    </script>
+</body>
+</html>
